@@ -1,0 +1,42 @@
+(page "index.html"
+  (:require
+   [cljsjs.codemirror]
+   [cljs.tools.reader :refer [read-string]]
+   [cljs.js :as cljs]))
+
+;; (def input-str  (cell ""))
+;; (def read-input (cell= (read-string input-str)))
+
+;; (def res (cell nil))
+;; (def err (cell nil))
+
+;; (def foop
+;;   (cell= (fn [{:keys [x y]}] [x y])))
+
+;; (cell= (println (foop {:x 1 :y 2}) ))
+
+;; (defn ev-str
+;;   [s]
+;;   (cljs/eval (cljs/empty-state)
+;;              (read-string s)
+;;              {:eval cljs/js-eval}
+;;              (fn [{:keys [error value] :as m}]
+;;                (println m))))
+
+;; (ev-str "(js/alert javelin.core/formula)")
+
+
+(defelem codemirror [attrs _]
+  (with-let [box (div attrs)]
+    (js/CodeMirror
+     box
+     (js-obj "mode" "javascript"
+             "value" "function myScript(){return 100;}\n"
+             "lineNumbers" true))))
+
+(html
+  (head
+    (link :href "cljsjs/codemirror/development/codemirror.css" :rel "stylesheet")
+    (link :href "app.css" :rel "stylesheet"))
+  (body
+    (codemirror :style "width: 400px;")))
