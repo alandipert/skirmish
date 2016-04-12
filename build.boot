@@ -17,7 +17,7 @@
 (require
   '[adzerk.boot-cljs      :refer [cljs]]
   '[adzerk.boot-reload    :refer [reload]]
-  '[hoplon.boot-hoplon    :refer [hoplon prerender]]
+  '[hoplon.boot-hoplon    :refer :all]
   '[pandeiro.boot-http    :refer [serve]])
 
 (deftask dev

@@ -2,41 +2,50 @@
   (:require
    [cljsjs.codemirror]
    [cljs.tools.reader :refer [read-string]]
-   [cljs.js :as cljs]))
+   [cljs.js :as cljs]
+   [skirmish.rpc :as rpc]
+   [castra.core :refer [mkremote]]))
 
-;; (def input-str  (cell ""))
-;; (def read-input (cell= (read-string input-str)))
+(defc compiled-hoplon nil)
+(defc error nil)
+(defc loading [])
 
-;; (def res (cell nil))
-;; (def err (cell nil))
+(def compile-hoplon
+  (mkremote 'skirmish.api/get-state compiled-hoplon error loading))
 
-;; (def foop
-;;   (cell= (fn [{:keys [x y]}] [x y])))
+(defn doit [expr]
+  (rpc/get-state)
+  )
 
-;; (cell= (println (foop {:x 1 :y 2}) ))
+(defc code-str nil)
 
-;; (defn ev-str
-;;   [s]
-;;   (cljs/eval (cljs/empty-state)
-;;              (read-string s)
-;;              {:eval cljs/js-eval}
-;;              (fn [{:keys [error value] :as m}]
-;;                (println m))))
+(defc= maybe-expr
+  (try (read-string (str "(" code-str ")"))
+       (catch js/Error e e)))
 
-;; (ev-str "(js/alert javelin.core/formula)")
+(defc= read-error
+  (when (instance? js/Error maybe-expr) maybe-expr))
 
-
-(defelem codemirror [attrs _]
-  (with-let [box (div attrs)]
-    (js/CodeMirror
-     box
-     (js-obj "mode" "javascript"
-             "value" "function myScript(){return 100;}\n"
-             "lineNumbers" true))))
+(defc= expr
+  (when-not read-error maybe-expr))
 
 (html
-  (head
-    (link :href "cljsjs/codemirror/development/codemirror.css" :rel "stylesheet")
-    (link :href "app.css" :rel "stylesheet"))
   (body
-    (codemirror :style "width: 400px;")))
+    (div
+      (div
+        :id "input"
+        (textarea :value code-str :keyup #(reset! code-str @%))
+        (button
+          :type "submit"
+          :click #(when @expr (compile-hoplon @expr))
+          "pres")
+        )
+      (div :id "output"
+           (div :css {:border "1px solid green"}
+                (code :text (cell= (pr-str expr))))
+           (div :css {:border "1px solid red"}
+                (code :text compiled-hoplon))
+           )
+      (div :id "error"
+           :css {:color "orange"}
+           (pre :text (cell= (when read-error (.-message read-error))))))))
