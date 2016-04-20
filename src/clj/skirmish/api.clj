@@ -19,13 +19,8 @@
           (list* :require vars)
           (list* :require-macros macros))))
 
-(closure/build [ns-decl] cljs-opts cljs-env)
-
-(def initial-env-value @cljs-env)
-
 (defrpc get-state [expr]
-  "aloha mundo")
-
+  (closure/build [ns-decl expr] cljs-opts cljs-env))
 
 (comment
   

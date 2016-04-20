@@ -29,7 +29,7 @@
       :handler 'skirmish.handler/app
       :reload  true)
     (watch)
-    (speak)
+    (speak :theme "pillsbury")
     (hoplon)
     (reload)
     (cljs)))

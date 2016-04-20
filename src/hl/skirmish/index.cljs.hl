@@ -17,7 +17,7 @@
   (rpc/get-state)
   )
 
-(defc code-str nil)
+(defc code-str "(hoplon.core/html (hoplon.core/body (hoplon.core/h1 \"wubnub\")))")
 
 (defc= maybe-expr
   (try (read-string (str "(" code-str ")"))
@@ -29,6 +29,17 @@
 (defc= expr
   (when-not read-error maybe-expr))
 
+(defelem sandbox
+  [{:keys [js-cell] :as attrs} kids]
+  (with-let [wrapper (div (dissoc attrs :js-cell) (iframe))]
+    (let [code-cell (cell= (str js-cell))]
+      (with-init!
+        (cell=
+         (let [frm (iframe)]
+           (.empty (js/jQuery wrapper))
+           (.appendChild wrapper frm)
+           (-> frm (.-contentWindow) (.eval (str js-cell)))))))))
+
 (html
   (body
     (div
@@ -37,15 +48,14 @@
         (textarea :value code-str :keyup #(reset! code-str @%))
         (button
           :type "submit"
+          ;; :disabled (cell= (seq loading))
           :click #(when @expr (compile-hoplon @expr))
-          "pres")
-        )
-      (div :id "output"
-           (div :css {:border "1px solid green"}
-                (code :text (cell= (pr-str expr))))
-           (div :css {:border "1px solid red"}
-                (code :text compiled-hoplon))
-           )
+          "pres"))
       (div :id "error"
-           :css {:color "orange"}
-           (pre :text (cell= (when read-error (.-message read-error))))))))
+        :css {:color "orange"}
+        (pre :text (cell= (when read-error (.-message read-error)))))
+      (div :id "output"
+        (div :css {:border "1px solid green"}
+          (code :text (cell= (pr-str expr))))
+        (div :css {:border "1px solid blue"}
+          (sandbox :js-cell compiled-hoplon))))))
