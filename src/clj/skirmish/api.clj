@@ -19,15 +19,20 @@
           (list* :require vars)
           (list* :require-macros macros))))
 
-(defrpc get-state [expr]
-  (closure/build [ns-decl expr] cljs-opts cljs-env))
+(println ns-decl)
+
+(def compiled-ns
+  (closure/build [ns-decl] cljs-opts cljs-env))
+
+(defrpc get-compiled-ns []
+  compiled-ns)
+
+(defrpc get-compiled-expr [expr]
+  (subs
+   (closure/build [ns-decl expr] cljs-opts cljs-env)
+   (count compiled-ns)))
 
 (comment
-  
-  
   (clojure.pprint/pprint page-require)
-
-  (closure/build [ns-decl '(prn :hi)] cljs-opts cljs-)
-  
-  )
+  (closure/build [ns-decl '(prn :hi)] cljs-opts cljs-))
 

@@ -4,7 +4,7 @@
                   [compojure                 "1.5.0"]
                   [hoplon/boot-hoplon        "0.1.13"]
                   [hoplon/castra             "3.0.0-SNAPSHOT"]
-                  [hoplon/hoplon             "6.0.0-alpha13"]
+                  [hoplon/hoplon             "6.0.0-alpha14"]
                   [org.clojure/clojure       "1.7.0"]
                   [org.clojure/clojurescript "1.8.40"]
                   [pandeiro/boot-http        "0.7.3"]

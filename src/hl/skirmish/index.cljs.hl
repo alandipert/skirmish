@@ -6,18 +6,27 @@
    [skirmish.rpc :as rpc]
    [castra.core :refer [mkremote]]))
 
+(defc compiled-ns nil)
 (defc compiled-hoplon nil)
+(defc= compiled (when (and compiled-ns compiled-hoplon)
+                  (str compiled-ns compiled-hoplon)))
+
 (defc error nil)
 (defc loading [])
 
+(def compile-ns
+  (mkremote 'skirmish.api/get-compiled-ns compiled-ns error loading))
+
 (def compile-hoplon
-  (mkremote 'skirmish.api/get-state compiled-hoplon error loading))
+  (mkremote 'skirmish.api/get-compiled-expr compiled-hoplon error loading))
 
-(defn doit [expr]
-  (rpc/get-state)
-  )
+(defn compile!
+  [expr]
+  (if-not @compiled-ns
+    (compile-ns))
+  (compile-hoplon expr))
 
-(defc code-str "(hoplon.core/html (hoplon.core/body (hoplon.core/h1 \"wubnub\")))")
+(defc code-str "(html (body (h1 \"hello world\")))")
 
 (defc= maybe-expr
   (try (read-string (str "(" code-str ")"))
@@ -49,7 +58,7 @@
         (button
           :type "submit"
           ;; :disabled (cell= (seq loading))
-          :click #(when @expr (compile-hoplon @expr))
+          :click #(when @expr (compile! @expr))
           "pres"))
       (div :id "error"
         :css {:color "orange"}
@@ -58,4 +67,4 @@
         (div :css {:border "1px solid green"}
           (code :text (cell= (pr-str expr))))
         (div :css {:border "1px solid blue"}
-          (sandbox :js-cell compiled-hoplon))))))
+          (sandbox :js-cell compiled))))))
